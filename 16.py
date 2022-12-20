@@ -41,15 +41,33 @@ with open(data_file) as f:
             graph[i].add(name)
 
 
-queue = [('AA', 0, 30, (), ())]
+all_distances = {}
+def dfs_distance(orig, valve, depth):
+    if valve in all_distances[orig]:
+        return
+
+    if orig != valve:
+        all_distances[orig][valve] = depth
+
+    for next_valve in graph[valve]:
+        dfs_distance(orig, next_valve, depth+1)
+
+for valve in graph:
+    all_distances[valve] = {}
+    dfs_distance(valve, valve, 0)
+
+
+
+queue = [('AA', 0, 0, 30, ())]
 
 highest_value = 0
 seen = set()
 while queue:
     the_tuple = queue.pop(0)
-    valve, value, minutes_left, opened, visited = the_tuple
+    valve, flow, value, minutes_left, visited = the_tuple
     highest_value = max(highest_value, value)
-    print(valve, minutes_left, visited)
+
+    print(valve, minutes_left, visited, len(queue))
     if minutes_left <= 0:
         continue
     if the_tuple in seen:
@@ -57,12 +75,11 @@ while queue:
     seen.add(the_tuple)
 
     
-    if valve not in opened:
-        new_opened = tuple(sorted(opened + (valve,)))
-        queue.append((valve, value + flow_rates[valve], minutes_left - 1, new_opened, visited))
+    if valve in all_distances:
+        for next_valve in all_distances[valve]:
+            cost = all_distances[valve][next_valve]
+            if 1 + cost <= minutes_left:
+                new_visited = tuple(sorted(visited + (next_valve,)))
+                queue.append((next_valve, value + flow_rates[next_valve], minutes_left - (1 + cost), new_visited))
 
-    if valve in graph:
-        for next_valve in graph[valve]:
-            new_visited = tuple(sorted(visited + (valve,)))
-            queue.append((next_valve, value, minutes_left - 1, opened, new_visited))
-
+print_green(highest_value)
