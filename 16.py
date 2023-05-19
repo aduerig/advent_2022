@@ -91,7 +91,7 @@ while queue:
     the_tuple = queue.pop(0)
     valve, path, total_pressure, rate, minutes_left, visited = the_tuple
 
-    print(valve, path, minutes_left, visited, len(queue))
+    # print(valve, path, minutes_left, visited, len(queue))
     if valve in visited:
         continue
     new_visited = visited.union(set([valve]))
@@ -100,7 +100,7 @@ while queue:
     if path:
         path_finished.append(list(path))
     
-    max_pres = max(max_pres, total_pressure)
+    max_pres = max(max_pres, total_pressure + (rate * minutes_left))
 
     for next_valve in distances_without_zero[valve]:
         cost = distances_without_zero[valve][next_valve]
@@ -109,9 +109,9 @@ while queue:
             copy.append((next_valve, flow_rates[next_valve], minutes_left - (cost)))
             blah = total_pressure + (cost * rate)
             print(f'from {valve} to {next_valve} with {total_pressure=}, {cost=}, {rate=}, {blah=}')
-            if rate > 0:
-                exit()
-            queue.append((next_valve, copy, total_pressure + blah, rate + flow_rates[next_valve], minutes_left - (1 + cost), new_visited))
+            next_rate = rate + flow_rates[next_valve]
+            print(red(copy), next_rate)
+            queue.append((next_valve, copy, blah, next_rate, minutes_left - (1 + cost), new_visited))
 
 print_green(f'Maybe: {max_pres}')
 exit()
