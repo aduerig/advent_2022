@@ -2,6 +2,7 @@
 
 from helpers import * 
 
+from collections import deque
 import re
 import pathlib
 
@@ -87,40 +88,53 @@ for node, distances in distances_without_zero.items():
 # exit()
 
 
-queue = [('AA', 'AA', [], 0, 0, 0, 26, set())]
+queue = deque([('AA', 'AA', 0, 0, 0, 26, 26, set())])
 # path_finished = []
 max_pres = 0
 while queue:
-    the_tuple = queue.pop(0)
+    print(len(queue))
+    the_tuple = queue.popleft()
     valve_1, valve_2, total_pressure, rate_1, rate_2, minutes_left_1, minutes_left_2, visited = the_tuple
 
     # print(valve, path, minutes_left, visited, len(queue))
-    if (valve_1, valve_2) in visited:
+    if valve_1 in visited or valve_2 in visited:
         continue
-    new_visited = visited.union(set([(valve_1, valve_2)]))
+    new_visited = visited.union(set([valve_1, valve_2]))
     if minutes_left_1 <= 0 and minutes_left_2 <= 0:
         continue
     # if path:
     #     path_finished.append(list(path))
     
-    max_pres = max(max_pres, total_pressure + (rate_1 * minutes_left_1) + (rate_2 * minutes_left_2))
+    max_pres = max(max_pres, total_pressure + (rate_1 * max(minutes_left_1, 0)) + (rate_2 * max(minutes_left_2, 0)))
 
     for index1, next_valve_1 in enumerate(distances_without_zero[valve_1]):
         for index2, next_valve_2 in enumerate(distances_without_zero[valve_2]):
-            if index2 < index1:
+            # if index2 < index1:
+            #     continue
+            if index1 == index2:
                 continue
+            
             cost_1 = distances_without_zero[valve_1][next_valve_1]
             cost_2 = distances_without_zero[valve_2][next_valve_2]
-            next_rate_1 = 0
+            blah = total_pressure
+
+            temp_rate_1 = rate_1
             if cost_1 + 1 <= minutes_left_1:
-                rate_1 += flow_rates[next_valve_1]
-            
+                blah += ((cost_1 + 1) * temp_rate_1)
+                temp_rate_1 += flow_rates[next_valve_1]
+
+            temp_rate_2 = rate_2
             if cost_2 + 1 <= minutes_left_2:
-                rate_2 += flow_rates[next_valve_2]
+                blah += ((cost_2 + 1) * temp_rate_2)
+                temp_rate_2 += flow_rates[next_valve_2]
 
-            blah = total_pressure + ((cost_1 + 1) * rate_1) + ((cost_2 + 1) * rate_2)
 
-            queue.append((next_valve_1, next_valve_2, blah, rate_1, rate_2, minutes_left_1 - (cost_1 + 1), minutes_left_2 - (cost_2 + 1), new_visited))
+            print(f'{minutes_left_1=}, {cost_1=}, {minutes_left_2=}, {cost_2=}, {max_pres=}, {temp_rate_1=}, {temp_rate_2=}, {blah=}')
+            if cost_1 + 1 <= minutes_left_1 or cost_2 + 1 <= minutes_left_2:
+                queue.append((next_valve_1, next_valve_2, blah, temp_rate_1, temp_rate_2, minutes_left_1 - (cost_1 + 1), minutes_left_2 - (cost_2 + 1), new_visited))
+            
+            # if next_valve_2 == 'DD' and next_valve_1 == 'JJ':
+            #     exit()
 
 print_green(f'{max_pres=}')
 
