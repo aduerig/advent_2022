@@ -87,39 +87,40 @@ for node, distances in distances_without_zero.items():
 # exit()
 
 
-queue = [('AA', [], 0, 0, 30, set())]
-path_finished = []
+queue = [('AA', 'AA', [], 0, 0, 0, 26, set())]
+# path_finished = []
 max_pres = 0
 while queue:
     the_tuple = queue.pop(0)
-    valve, path, total_pressure, rate, minutes_left, visited = the_tuple
+    valve_1, valve_2, total_pressure, rate_1, rate_2, minutes_left_1, minutes_left_2, visited = the_tuple
 
     # print(valve, path, minutes_left, visited, len(queue))
-    if valve in visited:
+    if (valve_1, valve_2) in visited:
         continue
-    new_visited = visited.union(set([valve]))
-    if minutes_left <= 0:
+    new_visited = visited.union(set([(valve_1, valve_2)]))
+    if minutes_left_1 <= 0 and minutes_left_2 <= 0:
         continue
-    if path:
-        path_finished.append(list(path))
+    # if path:
+    #     path_finished.append(list(path))
     
-    max_pres = max(max_pres, total_pressure + (rate * minutes_left))
+    max_pres = max(max_pres, total_pressure + (rate_1 * minutes_left_1) + (rate_2 * minutes_left_2))
 
-    for next_valve in distances_without_zero[valve]:
-        cost = distances_without_zero[valve][next_valve]
-        if cost + 1 <= minutes_left:
-            copy = list(path)
-            copy.append((next_valve, flow_rates[next_valve], minutes_left - (cost + 1)))
-            blah = total_pressure + ((cost + 1) * rate)
-            # print(f'from {valve} to {next_valve} with {total_pressure=}, {cost=}, {rate=}, {blah=}')
-            next_rate = rate + flow_rates[next_valve]
-            # print(red(copy), next_rate)
-            # if next_valve == 'DD':
-            #     exit()
+    for index1, next_valve_1 in enumerate(distances_without_zero[valve_1]):
+        for index2, next_valve_2 in enumerate(distances_without_zero[valve_2]):
+            if index2 < index1:
+                continue
+            cost_1 = distances_without_zero[valve_1][next_valve_1]
+            cost_2 = distances_without_zero[valve_2][next_valve_2]
+            next_rate_1 = 0
+            if cost_1 + 1 <= minutes_left_1:
+                rate_1 += flow_rates[next_valve_1]
+            
+            if cost_2 + 1 <= minutes_left_2:
+                rate_2 += flow_rates[next_valve_2]
 
-            # if len(path) == 2 and path[0][0] == 'DD' and path[1][0] == 'BB' and next_valve == 'JJ':
-            #     exit()
-            queue.append((next_valve, copy, blah, next_rate, minutes_left - (cost + 1), new_visited))
+            blah = total_pressure + ((cost_1 + 1) * rate_1) + ((cost_2 + 1) * rate_2)
+
+            queue.append((next_valve_1, next_valve_2, blah, rate_1, rate_2, minutes_left_1 - (cost_1 + 1), minutes_left_2 - (cost_2 + 1), new_visited))
 
 print_green(f'{max_pres=}')
 
