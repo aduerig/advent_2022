@@ -139,20 +139,12 @@ for plan in plans:
                 continue
 
             def get_needed_minutes(cost, have, robots):
-                counter = 1
-                while True:
-                    if robots * counter >= (cost - have):
-                        return counter
-                    counter += 1
-
-                # needed_material = cost - have
-                # remainder = needed_material % robots
-                # minutes_needed = (needed_material + remainder) // robots
-                print(f'{minutes_needed=}, {cost=}, {have=}, {robots=}')
-                # if minutes_needed < 0:
-                #     print(f'{minutes_needed=}, {cost=}, {have=}, {robots=}')
-                #     exit()
-                return max(minutes_needed, 0)
+                needed = cost - have
+                
+                whole_num = needed // robots
+                if needed % robots:
+                    whole_num += 1
+                return whole_num
 
             ore_minutes, clay_minutes, obsidian_minutes = 1, 1, 1
             if ore_cost and curr_state.ore < ore_cost:
