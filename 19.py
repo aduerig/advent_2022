@@ -37,13 +37,9 @@ max_costs = [-float('inf'), -float('inf'), -float('inf'), -float('inf')]
 
 
 class State:
-    def __init__(self, plan, minutes_left=32):
-        self.plan = plan
-        
+    def __init__(self, minutes_left=32):        
         self.minutes_left = minutes_left
         
-        self.depth = 0
-
         self.ore = 0
         self.clay = 0
         self.obsidian = 0
@@ -58,14 +54,12 @@ class State:
 
 
     def copy_state(self):
-        newy = State(self.plan)
+        newy = State()
 
         newy.ore = self.ore
         newy.clay = self.clay
         newy.obsidian = self.obsidian
         newy.geode = self.geode
-
-        newy.depth = self.depth + 1
 
         newy.robots = list(self.robots)
         return newy
@@ -104,7 +98,7 @@ for plan in plans:
 
     print_blue(f'Plan {plan_num}: {ore_robot=}, {clay_robot=}, {obsidian_robot=}, {geode_robot=}, {max_costs=}')
     
-    queue = [State(plan=plan)]
+    queue = [State()]
     max_geodes = 0
     while queue:
         curr_state = queue.pop()        
@@ -127,7 +121,7 @@ for plan in plans:
             if robot_to_buy < 3:
                 if max_costs[robot_to_buy] <= curr_state.robots[robot_to_buy]:
                     continue
-            ore_cost, clay_cost, obsidian_cost = curr_state.plan[robot_to_buy]
+            ore_cost, clay_cost, obsidian_cost = plan[robot_to_buy]
 
             if ore_cost and not curr_state.robots[0]:
                 continue
