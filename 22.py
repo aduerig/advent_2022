@@ -18,6 +18,7 @@ facing_arrow = {
 
 grid = []
 path = []
+max_length = 0
 with open(data_file) as f:
     for line in f.readlines():
         line = line.strip('\n')
@@ -32,7 +33,11 @@ with open(data_file) as f:
                 if index1 != len(line.split('L')) - 1:
                     path.append('L')
         else:
-            grid.append(list(line))
+            to_add = list(line)
+            if len(line) < max_length:
+                to_add += [' '] * (max_length - len(line))
+            grid.append(to_add)
+            max_length = max(max_length, len(line))
 
 for line in grid:
     print(''.join(line))
@@ -47,6 +52,7 @@ def start_row(row, func):
 
 def start_col(col, func):
     for index, row in func(list(enumerate(grid))):
+        print(row, len(row), col)
         if row[col] in ['#', '.']:
             return index
 
