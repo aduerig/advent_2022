@@ -125,6 +125,9 @@ def step():
             pending_moves[(x, y)] = next_pos
             print(f'{(x, y)=} {next_pos=}')
 
+    if not pending_moves:
+        print_red('no elves moved')
+        exit()
     for (x, y), _ in pending_moves.items():
         new_grid[y][x] = '.'
 
