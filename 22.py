@@ -82,35 +82,26 @@ warps = {
     (None, -1, (0, 1), 1): ((0, None), (1, 0), side_length * 3, 'x', False),
     # 6->2
     (-1, None, (-1, 0), 3): ((None, 0), (0, -1), side_length, 'y', False),
-
-
     # 6->1
     (None, side_length * 4, (0, -1), 0): ((None, 0), (0, -1), side_length * 2, 'x', False),
     # 1->6
     (None, -1, (0, 1), 2): ((None, (side_length * 4) - 1), (0, 1), 0, 'x', False),
-
     # 5->2
     (-1, None, (-1, 0), 2): ((side_length, None), (1, 0), 0, 'y', True),
     # 2->5
     (side_length - 1, None, (-1, 0), 0): ((0, None), (1, 0), side_length * 2, 'y', True),
-
     # 4->6
     (None, side_length * 3, (0, -1), 1): ((side_length - 1, None), (-1, 0), side_length * 3, 'x', False),
     # 6->4
     (side_length, None, (1, 0), 3): ((None, (side_length * 3) - 1), (0, 1), side_length, 'y', False),
-
-
     # 4->1
     (side_length * 2, None, (1, 0), 2): (((side_length * 3) - 1, None), (-1, 0), 0, 'y', True),
     # 1->4
     (side_length * 3, None, (1, 0), 0): (((side_length * 2) - 1, None), (-1, 0), side_length * 2, 'y', True),
-
     # 1->3
     (None, side_length, (0, -1), 2): (((side_length * 2) - 1, None), (-1, 0), side_length, 'x', False),
     # 3->1
     (side_length * 2, None, (1, 0), 1): ((None, (side_length * 1) - 1), (0, 1), side_length * 2, 'y', False),
-
-
     # 5->3
     (None, (side_length * 2) - 1, (0, 1), 0): ((side_length * 1, None), (1, 0), side_length, 'x', False),
     # 3->5
