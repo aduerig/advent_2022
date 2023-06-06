@@ -52,9 +52,10 @@ def valid_directions(board, pos):
         (pos[0]-1, pos[1]),
         (pos[0]+1, pos[1])
     ]:
+        # print(f'{pos=} trying {x, y}, {board[y][x]}')
         if (x, y) == (1, 0) or (x, y) == (len(board[0]) - 2, len(board) - 1): 
             yield (x, y)
-        elif 1 <= x < len(board) - 1 and 1 <= y < len(board[x]) - 1:
+        elif 1 <= y < len(board) - 1 and 1 <= x < len(board[y]) - 1:
             if not board[y][x]:
                 yield (x, y)
     if not board[pos[1]][pos[0]]:
@@ -106,28 +107,34 @@ init_pos = (1, 0)
 print('INITIAL')
 print_board(board, init_pos)
 
-cached_minutes_to_boards = {0: deepcopy(board)}
+cached_minutes_to_boards = {}
 
 
+visited = set()
 queue = deque([(init_pos, deepcopy(board), 0)])
 while queue:
     pos, prev_board, minute = queue.popleft()
 
+    # if pos == (1, 0) and minute != 0:
+    #     continue
+
+    # print(f'=== curr_board: {pos=}, {minute=}')
+    # print_board(prev_board, pos)
+
+    if (pos, minute) in visited:
+        continue
+    visited.add((pos, minute))
+
     if minute + 1 not in cached_minutes_to_boards:
         new_board = blizzards_moved(prev_board)
-
-
+        cached_minutes_to_boards[minute + 1] = new_board
     new_board = cached_minutes_to_boards[minute + 1]
 
-    print(f'=== new_board: {pos=}, {minute=}')
-    print_board(new_board, pos)
-    # if minute == 1:
-    #     exit()
 
-    if random.randint(0, 1000) == 0:
+    if random.randint(0, 10000) == 0:
         print(f'{minute=}, {pos=}, {len(queue)=}')
 
-    if pos == ((len(board) - 2, len(board[0]) - 1)):
+    if pos == ((len(board[0]) - 2, len(board) - 1)):
         print_board(prev_board, pos)
         print_green(f'{minute=}')
         exit()
@@ -135,5 +142,9 @@ while queue:
     for new_pos in valid_directions(new_board, pos):
         queue.append((new_pos, new_board, minute+1))
     
+    # if minute == 14 and pos == (4, 3):
+    #     print('debug above')
+    #     print_board(new_board, pos)
+    #     exit()
 
 print_red('apperantly impossible...')
