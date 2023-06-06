@@ -111,9 +111,9 @@ cached_minutes_to_boards = {}
 
 
 visited = set()
-queue = deque([(init_pos, deepcopy(board), 0)])
+queue = deque([(init_pos, deepcopy(board), 0, 0)])
 while queue:
-    pos, prev_board, minute = queue.popleft()
+    pos, prev_board, minute, marker = queue.popleft()
 
     # if pos == (1, 0) and minute != 0:
     #     continue
@@ -121,9 +121,9 @@ while queue:
     # print(f'=== curr_board: {pos=}, {minute=}')
     # print_board(prev_board, pos)
 
-    if (pos, minute) in visited:
+    if (pos, minute, marker) in visited:
         continue
-    visited.add((pos, minute))
+    visited.add((pos, minute, marker))
 
     if minute + 1 not in cached_minutes_to_boards:
         new_board = blizzards_moved(prev_board)
@@ -134,13 +134,19 @@ while queue:
     if random.randint(0, 10000) == 0:
         print(f'{minute=}, {pos=}, {len(queue)=}')
 
-    if pos == ((len(board[0]) - 2, len(board) - 1)):
+
+    if marker == 1 and pos == (1, 0):
+        marker += 1
+    elif (marker == 0 or marker == 2) and pos == ((len(board[0]) - 2, len(board) - 1)):
+        marker += 1
+    
+    if marker == 3:
         print_board(prev_board, pos)
         print_green(f'{minute=}')
         exit()
 
     for new_pos in valid_directions(new_board, pos):
-        queue.append((new_pos, new_board, minute+1))
+        queue.append((new_pos, new_board, minute+1, marker))
     
     # if minute == 14 and pos == (4, 3):
     #     print('debug above')
